@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+    
+<link rel="stylesheet" href="{% static 'css/about.css' %}">
+
+<br>
+<div class="container">
+<div class="about-section">
+  <h1>About Us Page</h1>
+  <p>Some text about who we are and what we do.</p>
+  <p>Resize the browser window to see that this page is responsive by the way.</p>
+</div>
+
+
+{% for employee in employees %}
+  <div class="column">
+    <div class="card">
+      <img src="{{employee.image.url}}" alt="Mike" style="width:100%">
+      <div class="container">
+        <h2>Mike Ross</h2>
+        <p class="title">{{employee.profession}}</p>
+        <p>{{employee.description}}</p>
+        <a href="mailto:{{employee.email}}">
+        <p><button class="button">Əlaqə Saxla</button></p>
+      </a>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+
+
+</div> 
+</div>
+{% include 'includes/footer.html' %}
+{% endblock %}

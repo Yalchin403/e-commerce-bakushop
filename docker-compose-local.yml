@@ -1,0 +1,63 @@
+version: '3'
+
+services:
+  db:
+    image: "postgres:12"
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+
+  worker:
+    image: madefire/chordtest
+    build:
+      context: .
+    command: bash -c "celery -A order_automation worker -l INFO"
+    volumes:
+      - ./:/app/
+    depends_on:
+      - redis
+      - db
+    restart: always
+
+  web:
+    build:
+      context: .
+    
+    ports:
+      - "8000:8000"
+      - "5678:5678"
+    volumes:
+      - type: bind
+        source: .
+        target: /app
+    env_file:
+      - .env
+    command: >
+      bash -c "python3 manage.py makemigrations
+      && python3 manage.py migrate
+      && python manage.py collectstatic --no-input
+      && python manage.py runserver 0.0.0.0:8000"
+    links:
+      - db:db
+      - redis:redis
+    depends_on:
+      - db
+      - redis
+      - worker
+    restart: always
+
+volumes:
+  pgdata:
