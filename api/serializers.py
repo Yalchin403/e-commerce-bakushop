@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 class ProductSerializer(serializers.ModelSerializer):
     is_in_my_wishlist = serializers.BooleanField(default=False)
+
     class Meta:
         model = Product
         fields = [

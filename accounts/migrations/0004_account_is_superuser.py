@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0003_account_activation_key_account_otp'),
+        ("accounts", "0003_account_activation_key_account_otp"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='account',
-            name='is_superuser',
+            model_name="account",
+            name="is_superuser",
             field=models.BooleanField(default=False),
         ),
     ]

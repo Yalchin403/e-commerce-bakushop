@@ -8,32 +8,40 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0006_account_is_superuser'),
+        ("accounts", "0006_account_is_superuser"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Contact',
+            name="Contact",
             fields=[
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
-                ('first_name', models.CharField(max_length=30)),
-                ('last_name', models.CharField(max_length=30)),
-                ('phone_number', models.CharField(max_length=13)),
-                ('city', models.CharField(max_length=30)),
-                ('address', models.CharField(max_length=50)),
-                ('postal_code', models.CharField(max_length=10)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        primary_key=True,
+                        serialize=False,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                ("first_name", models.CharField(max_length=30)),
+                ("last_name", models.CharField(max_length=30)),
+                ("phone_number", models.CharField(max_length=13)),
+                ("city", models.CharField(max_length=30)),
+                ("address", models.CharField(max_length=50)),
+                ("postal_code", models.CharField(max_length=10)),
             ],
         ),
         migrations.RemoveField(
-            model_name='account',
-            name='first_name',
+            model_name="account",
+            name="first_name",
         ),
         migrations.RemoveField(
-            model_name='account',
-            name='last_name',
+            model_name="account",
+            name="last_name",
         ),
         migrations.RemoveField(
-            model_name='account',
-            name='phone_number',
+            model_name="account",
+            name="phone_number",
         ),
     ]

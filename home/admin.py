@@ -14,7 +14,7 @@ from .models import (
 
 
 class EmployeeManager(admin.ModelAdmin):
-    list_display = ['name', 'surname', 'image', 'profession']
+    list_display = ["name", "surname", "image", "profession"]
 
 
 admin.site.register(Employee, EmployeeManager)

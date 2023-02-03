@@ -19,19 +19,16 @@ def send_email_to_admin(name, surname, email, phone_number, order_url, notes):
         	<li>Əlavə qeydlər: {notes}</li>
         	<ul>
         	"""
-        reciever_email = os.getenv('RECIEVER_EMAIL')
+        reciever_email = os.getenv("RECIEVER_EMAIL")
 
         msg = EmailMessage(
-            "Yeni Sifaris",
-            email_body,
-            EMAIL_HOST_USER,
-            [reciever_email]
+            "Yeni Sifaris", email_body, EMAIL_HOST_USER, [reciever_email]
         )
         msg.content_subtype = "html"
         msg.send()
 
     except Exception as err:
-            LOGGER(f"Couldn't send the email, {err}")
+        LOGGER(f"Couldn't send the email, {err}")
 
 
 def send_status_update_to_user(name, email, status, order_url, notes):
@@ -45,12 +42,7 @@ def send_status_update_to_user(name, email, status, order_url, notes):
             <ul>
             """
 
-        msg = EmailMessage(
-            "Yeni Sifaris",
-            email_body,
-            EMAIL_HOST_USER,
-            [email]
-        )
+        msg = EmailMessage("Yeni Sifaris", email_body, EMAIL_HOST_USER, [email])
         msg.content_subtype = "html"
         msg.send()
 

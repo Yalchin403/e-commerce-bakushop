@@ -14,9 +14,9 @@ class Employee(models.Model):
     profession = models.CharField(max_length=55)
     description = models.TextField()
     email = models.EmailField(max_length=55)
-    image = models.ImageField(upload_to='employees/%Y/%m/%d')
+    image = models.ImageField(upload_to="employees/%Y/%m/%d")
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now = True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return f"{self.name} {self.surname}"
@@ -29,7 +29,7 @@ class Category(models.Model):
 
     def __str__(self) -> str:
         return self.name
-    
+
     def get_absolute_url(self):
         return reverse("home:products_by_category", args=[self.slug])
 
@@ -38,7 +38,7 @@ class Category(models.Model):
             self.slug = slugify(self.name)
 
         return super().save(*args, **kwargs)
-    
+
     class Meta:
         verbose_name_plural = "Categories"
 
@@ -69,12 +69,12 @@ class ProductProperty(models.Model):
     size = models.ForeignKey(Size, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
-        return f'{self.size.name} size - {self.color.name}'
+        return f"{self.size.name} size - {self.color.name}"
 
 
 class Tag(models.Model):
     name = models.CharField(max_length=15)
-    
+
     def __str__(self) -> str:
         return self.name
 
@@ -84,10 +84,12 @@ class Product(models.Model):
     slug = models.SlugField(null=True, unique=True, blank=True)
     description = models.TextField(blank=True)
     price = models.FloatField()
-    images = models.ManyToManyField('ProductImage', related_name="products")
+    images = models.ManyToManyField("ProductImage", related_name="products")
     stock = models.IntegerField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    product_size_and_color = models.ManyToManyField(ProductProperty, related_name="products")
+    product_size_and_color = models.ManyToManyField(
+        ProductProperty, related_name="products"
+    )
     visit_counter = models.IntegerField(default=0)
     tags = models.ManyToManyField(Tag, related_name="products", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -111,7 +113,9 @@ class Review(models.Model):
     stars = models.IntegerField()
     description = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviews")
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="reviews")
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="reviews"
+    )
 
     def __str__(self) -> str:
         return f"{self.stars} stars - {self.description[:20]}"
@@ -119,7 +123,7 @@ class Review(models.Model):
     def save(self, *args, **kwargs):
         if self.stars > 5:
             self.stars = 5
-        
+
         if self.stars < 1:
             self.stars = 1
 
@@ -139,7 +143,7 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     is_active = models.BooleanField(default=True)
-    
+
     def __str__(self) -> str:
         return self.product
 

@@ -7,35 +7,71 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('home', '0003_remove_product_is_available_alter_product_images'),
+        ("home", "0003_remove_product_is_available_alter_product_images"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Color',
+            name="Color",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=55, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=55, unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Size',
+            name="Size",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=55, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=55, unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='ProductProperty',
+            name="ProductProperty",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('color', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='home.color')),
-                ('size', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='home.size')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "color",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="home.color"
+                    ),
+                ),
+                (
+                    "size",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="home.size"
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='product',
-            name='product_size_and_color',
-            field=models.ManyToManyField(related_name='products', to='home.productproperty'),
+            model_name="product",
+            name="product_size_and_color",
+            field=models.ManyToManyField(
+                related_name="products", to="home.productproperty"
+            ),
         ),
     ]

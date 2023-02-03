@@ -6,20 +6,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0002_alter_account_phone_number'),
+        ("accounts", "0002_alter_account_phone_number"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='account',
-            name='activation_key',
-            field=models.CharField(default='ksjdfk', max_length=55),
+            model_name="account",
+            name="activation_key",
+            field=models.CharField(default="ksjdfk", max_length=55),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='account',
-            name='otp',
-            field=models.CharField(default='skdjfh', max_length=55),
+            model_name="account",
+            name="otp",
+            field=models.CharField(default="skdjfh", max_length=55),
             preserve_default=False,
         ),
     ]

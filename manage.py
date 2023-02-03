@@ -6,16 +6,17 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'order_automation.settings')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "order_automation.settings")
 
-     # start new section
+    # start new section
     from django.conf import settings
 
     if settings.DEBUG:
-        if os.environ.get('RUN_MAIN') or os.environ.get('WERKZEUG_RUN_MAIN'):
+        if os.environ.get("RUN_MAIN") or os.environ.get("WERKZEUG_RUN_MAIN"):
             import debugpy
+
             debugpy.listen(("0.0.0.0", 5678))
-            print('Attached Django Container Debug')
+            print("Attached Django Container Debug")
     # end new section
 
     try:
@@ -29,5 +30,5 @@ def main():
     execute_from_command_line(sys.argv)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

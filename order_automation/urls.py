@@ -21,15 +21,16 @@ from django.urls import path, include
 
 
 # handler404 = 'core.views.error_404'
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('order/', include('orders.urls')),
-    path('auth/', include('accounts.urls')),
-    path('api/', include('api.urls')),
-    path('', include('home.urls')),
+urlpatterns = (
+    [
+        path("admin/", admin.site.urls),
+        path("order/", include("orders.urls")),
+        path("auth/", include("accounts.urls")),
+        path("api/", include("api.urls")),
+        path("", include("home.urls")),
+    ]
+    + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+)
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-urlpatterns.extend(i18n_patterns(
-    prefix_default_language=False
-))
+urlpatterns.extend(i18n_patterns(prefix_default_language=False))

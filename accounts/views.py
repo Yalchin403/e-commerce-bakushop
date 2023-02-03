@@ -197,8 +197,8 @@ class AccountView(View):
             return render(request, "accounts/account_detail.html", context=context)
 
         # TODO: check if email is valid
-        # TODO: add url for confirming url with token -> /auth/change-email/:token 
-        # send verification email 
+        # TODO: add url for confirming url with token -> /auth/change-email/:token
+        # send verification email
         token = request.user.generate_token(
             {"id": self.request.user.id, "email": email}
         )

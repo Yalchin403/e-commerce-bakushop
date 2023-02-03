@@ -18,13 +18,13 @@ def send_message_to_admin(name, email, subject, message):
         <li>Mesaj: {message}</li>
         <ul>
         """
-    reciever_email = os.getenv('ADMIN_EMAIL')
+    reciever_email = os.getenv("ADMIN_EMAIL")
 
     msg = EmailMessage(
         f"Yeni Mesaj - Mövzu -> {subject}",
         email_body,
         EMAIL_HOST_USER,
-        [reciever_email]
+        [reciever_email],
     )
     msg.content_subtype = "html"
     msg.send()
@@ -37,8 +37,8 @@ def get_request_params(request):
     filter_by_tags = ""
 
     if "sort_by" in request.GET:
-        sort_by = request.GET['sort_by']
-        
+        sort_by = request.GET["sort_by"]
+
         if sort_by == "popularity":
             sort_by = "-visit_counter"
 
@@ -47,7 +47,7 @@ def get_request_params(request):
 
         elif sort_by == "price_low_to_high":
             sort_by = "price"
-        
+
         elif sort_by == "price_high_to_low":
             sort_by = "-price"
 
@@ -55,38 +55,36 @@ def get_request_params(request):
             sort_by = ""
 
     if "filter_by_price" in request.GET:
-        filter_by_price = request.GET['filter_by_price']
+        filter_by_price = request.GET["filter_by_price"]
 
-        filter_by_price_options  = ["0-50", "50-100", "100-150", "150-200", "gte200"]
-        
+        filter_by_price_options = ["0-50", "50-100", "100-150", "150-200", "gte200"]
+
         if filter_by_price in filter_by_price_options:
             filter_by_price_index = filter_by_price_options.index(filter_by_price)
             filter_by_price = filter_by_price_options[filter_by_price_index]
-        
+
     else:
         filter_by_price = ""
 
     if "filter_by_color" in request.GET:
-        filter_by_color = request.GET['filter_by_color']
-    
+        filter_by_color = request.GET["filter_by_color"]
+
     if "filter_by_tags" in request.GET:
-        filter_by_tags = request.GET['filter_by_tags']
+        filter_by_tags = request.GET["filter_by_tags"]
 
     return sort_by, filter_by_price, filter_by_color, filter_by_tags
-    
+
 
 # custom contect processor for getting wish_list_items count
-def get_wish_list_item_counts(request)-> int:
+def get_wish_list_item_counts(request) -> int:
     wish_list_count = 0
 
-    if request.user.is_authenticated:        
+    if request.user.is_authenticated:
         wish_list = WishList.objects.filter(user=request.user).first()
         wish_list_count = wish_list.products.count()
-    
+
     else:
         fav_products = request.session.get("fav_products", [])
         wish_list_count = len(fav_products)
 
-    return {
-        "user_fav_products_count": wish_list_count
-    }
+    return {"user_fav_products_count": wish_list_count}
