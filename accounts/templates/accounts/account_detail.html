@@ -99,9 +99,18 @@
 </header>
 
 <br><br><br><br><br><br>
-<section style="background-color: #eee;">
+<section style="background-color: white;">
     <div class="container py-5">
-  
+			{% for message in messages %}
+                <div class="container-fluid p-0">
+                    <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="True">&times;</span>
+                        </button>
+                        {{ message }}
+                    </div>
+                </div>
+            {% endfor %}
       <div class="row">
         <div class="col-lg-4">
           <div class="card mb-4">
@@ -118,6 +127,9 @@
           <div class="card mb-4">
             <div class="card-body">
 
+						<!-- form -->
+						<form action="/auth/account/" method="post">
+                {% csrf_token %}
               <div class="row">
                 <div class="col-sm-3">
                   <p class="mb-0">First Name</p>
@@ -153,7 +165,7 @@
                   <p class="mb-0">Mobile</p>
                 </div>
                 <div class="col-sm-9">
-                  <input type="text" class="form-control" name="phone" value="{{account.phone_number}}">
+                  <input type="text" class="form-control" name="phone_number" value="{{account.phone_number}}">
                 </div>
               </div>
               <hr>
@@ -183,13 +195,11 @@
                   <p class="mb-0">Postal Code</p>
                 </div>
                 <div class="col-sm-9">
-                  <input type="text" class="form-control" name="city" value="{{account.postal_code}}">
+                  <input type="text" class="form-control" name="postal_code" value="{{account.postal_code}}">
                 </div>
               </div>
               
               <br>
-              <form action="/auth/account/" method="post">
-                {% csrf_token %}
                 <button type="submit" class="btn btn-primary">Save</button>
               </form>
             </div>

@@ -165,3 +165,55 @@ class AccountView(View):
         current_user_account = get_object_or_404(AccountDetail, user=request.user)
         context = {"account": current_user_account}
         return render(request, "accounts/account_detail.html", context=context)
+
+    def post(self, request):
+        current_user_account = get_object_or_404(AccountDetail, user=request.user)
+        context = {"account": current_user_account}
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
+        email = request.POST.get("email")
+        mobile = request.POST.get("phone_number")
+        city = request.POST.get("city")
+        address = request.POST.get("address")
+        postal_code = request.POST.get("postal_code")
+
+        email_already_exists = User.objects.filter(email=email).exists()
+        mobile_already_exists = AccountDetail.objects.filter(
+            phone_number=mobile
+        ).exists()
+
+        if email_already_exists or mobile_already_exists:
+            if email_already_exists:
+                messages.add_message(
+                    request, messages.ERROR, "User with this email already exists"
+                )
+            if mobile_already_exists:
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "User with this phone number already exists",
+                )
+
+            return render(request, "accounts/account_detail.html", context=context)
+
+        # TODO: check if email is valid
+        # TODO: add url for confirming url with token -> /auth/change-email/:token 
+        # send verification email 
+        token = request.user.generate_token(
+            {"id": self.request.user.id, "email": email}
+        )
+        absolute_url = f"{settings.DOMAIN}/auth/change-email/{token}/"
+        template_path = os.path.join(templates_directory, "change_email.html")
+        email_content = get_html_content(template_path, absolute_url=absolute_url)
+        send_email.delay("Yeni emailinizi tesdiqləyin", email, email_content)
+
+        current_user_account.first_name = first_name
+        current_user_account.last_name = last_name
+        current_user_account.phone_number = mobile
+        current_user_account.city = city
+        current_user_account.address = address
+        current_user_account.postal_code = postal_code
+
+        current_user_account.save()
+
+        return render(request, "accounts/account_detail.html", context=context)

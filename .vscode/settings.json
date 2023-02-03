@@ -1,3 +1,4 @@
 {
   "python.defaultInterpreterPath": "${command:python.interpreterPath}",
+  "python.formatting.provider": "black"
 }
