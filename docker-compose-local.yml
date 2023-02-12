@@ -46,8 +46,8 @@ services:
     env_file:
       - .env
     command: >
-      bash -c "python3 manage.py makemigrations
-      && python3 manage.py migrate
+      bash -c "python3 manage.py makemigrations --no-input
+      && python3 manage.py migrate --no-input
       && python manage.py collectstatic --no-input
       && python manage.py runserver 0.0.0.0:8000"
     links:

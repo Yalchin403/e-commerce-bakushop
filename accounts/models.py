@@ -11,15 +11,11 @@ from django.dispatch import receiver
 from .utils import get_html_content
 from datetime import datetime
 import jwt
-
-
-templates_directory = os.path.join(
-    settings.BASE_DIR, "accounts", "templates", "accounts"
-)
+from order_automation.utils import get_template
 
 
 class MyAccountManager(BaseUserManager):
-    def create_user(self, username, first_name, last_name, email, password):
+    def create_user(self, username, email, password):
 
         if not email:
             raise ValueError("User must have an email address")
@@ -33,8 +29,6 @@ class MyAccountManager(BaseUserManager):
         user = self.model(
             email=self.normalize_email(email.lower()),
             username=username,
-            first_name=first_name,
-            last_name=last_name,
         )
 
         user.set_password(password)
@@ -82,7 +76,7 @@ class Account(AbstractBaseUser):
     activation_key = models.CharField(max_length=55)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username", "first_name", "last_name"]
+    REQUIRED_FIELDS = ["username"]
 
     def __str__(self) -> str:
         return self.email
@@ -125,7 +119,8 @@ class Account(AbstractBaseUser):
 
     @staticmethod
     def decode_token(token):
-        return jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        return jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+
 
 @receiver(post_save, sender=Account)
 def print_only_after_deal_created(sender, instance, created, **kwargs):
@@ -133,7 +128,8 @@ def print_only_after_deal_created(sender, instance, created, **kwargs):
         instance.generate_otp()
         otp_absolute_url = instance.generate_otp_link(instance.id, instance.otp)
         email_subject = "Hesab Təsdiqlənməsi"
-        template_path = os.path.join(templates_directory, "email_send_otp.html")
+
+        template_path = get_template("accounts", "email_send_otp.html")
         email_content = get_html_content(
             template_path, otp_absolute_url=otp_absolute_url, domain=settings.DOMAIN
         )

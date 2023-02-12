@@ -11,7 +11,8 @@ import pyotp
 from django.shortcuts import get_object_or_404
 from accounts.tasks import send_email
 from .utils import get_html_content, is_email
-from .models import templates_directory, AccountDetail
+from .models import AccountDetail
+from order_automation.utils import get_template
 
 
 User = get_user_model()
@@ -211,7 +212,7 @@ class AccountView(View):
             {"id": self.request.user.id, "new_email": email}
         )
         absolute_url = f"{settings.DOMAIN}/auth/change-email/{token}/"
-        template_path = os.path.join(templates_directory, "change_email.html")
+        template_path = get_template(__name__.split('.')[0], "change_email.html")
         email_content = get_html_content(template_path, absolute_url=absolute_url)
         send_email.delay("Yeni emailinizi tesdiqləyin", email, email_content)
 

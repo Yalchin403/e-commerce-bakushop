@@ -135,7 +135,11 @@
                   <p class="mb-0">First Name</p>
                 </div>
                 <div class="col-sm-9">
+									{% if account.last_name%}
                   <input type="text" class="form-control" name="first_name" value="{{account.first_name}}">
+									{% else %}
+                  <input type="text" class="form-control" name="first_name" value="">
+									{% endif %}
                 </div>
               </div>
               <hr>
@@ -145,7 +149,11 @@
                   <p class="mb-0">Last Name</p>
                 </div>
                 <div class="col-sm-9">
+									{% if account.last_name %}
                   <input type="text" class="form-control" name="last_name" value="{{account.last_name}}">
+									{% else %}
+                  <input type="text" class="form-control" name="last_name" value="">
+									{% endif %}
                 </div>
               </div>
               <hr>
@@ -165,7 +173,11 @@
                   <p class="mb-0">Mobile</p>
                 </div>
                 <div class="col-sm-9">
+									{% if account.phone_number %}
                   <input type="text" class="form-control" name="phone_number" value="{{account.phone_number}}">
+									{% else %}
+                  <input type="text" class="form-control" name="phone_number" value="">
+									{% endif %}
                 </div>
               </div>
               <hr>
@@ -175,7 +187,11 @@
                   <p class="mb-0">City</p>
                 </div>
                 <div class="col-sm-9">
+									{% if account.city is not None %}
                   <input type="text" class="form-control" name="city" value="{{account.city}}">
+									{% else %}
+                  <input type="text" class="form-control" name="city" value="">
+									{% endif %}
                 </div>
               </div>
               <hr>
@@ -185,8 +201,13 @@
                   <p class="mb-0">Address</p>
                 </div>
                 <div class="col-sm-9">
+									{% if account.address %}
                   <input type="text" class="form-control" name="address" value="{{account.address}}">
-                </div>
+									{% else %}
+                  <input type="text" class="form-control" name="address" value="">
+									{% endif %}
+									
+								</div>
               </div>
               <hr>
 
@@ -195,8 +216,12 @@
                   <p class="mb-0">Postal Code</p>
                 </div>
                 <div class="col-sm-9">
+									{% if account.address %}
                   <input type="text" class="form-control" name="postal_code" value="{{account.postal_code}}">
-                </div>
+									{% else %}
+                  <input type="text" class="form-control" name="postal_code" value="">
+									{% endif %}
+								</div>
               </div>
               
               <br>

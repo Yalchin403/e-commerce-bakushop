@@ -10,6 +10,8 @@ from .models import (
     ProductProperty,
     Tag,
     WishList,
+    Cart,
+    CartItem,
 )
 
 
@@ -29,5 +31,7 @@ admin.site.register(
         Review,
         Tag,
         WishList,
+        CartItem,
+        Cart,
     ]
 )
