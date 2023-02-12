@@ -10,7 +10,7 @@ import os
 import pyotp
 from django.shortcuts import get_object_or_404
 from accounts.tasks import send_email
-from .utils import get_html_content
+from .utils import get_html_content, is_email
 from .models import templates_directory, AccountDetail
 
 
@@ -177,12 +177,18 @@ class AccountView(View):
         address = request.POST.get("address")
         postal_code = request.POST.get("postal_code")
 
-        email_already_exists = User.objects.filter(email=email).exists()
-        mobile_already_exists = AccountDetail.objects.filter(
-            phone_number=mobile
-        ).exists()
+        email_already_exists = (
+            User.objects.filter(email=email).exclude(email=request.user.email).exists()
+        )
+        mobile_already_exists = (
+            AccountDetail.objects.filter(phone_number=mobile)
+            .exclude(phone_number=request.user.account_detail.phone_number)
+            .exists()
+        )
 
-        if email_already_exists or mobile_already_exists:
+        is_email_valid = is_email(email)
+
+        if email_already_exists or mobile_already_exists or not is_email_valid:
             if email_already_exists:
                 messages.add_message(
                     request, messages.ERROR, "User with this email already exists"
@@ -194,13 +200,15 @@ class AccountView(View):
                     "User with this phone number already exists",
                 )
 
+            if not is_email_valid:
+                messages.add_message(
+                    request, messages.ERROR, "Provided email is not valid email"
+                )
             return render(request, "accounts/account_detail.html", context=context)
 
-        # TODO: check if email is valid
-        # TODO: add url for confirming url with token -> /auth/change-email/:token
         # send verification email
         token = request.user.generate_token(
-            {"id": self.request.user.id, "email": email}
+            {"id": self.request.user.id, "new_email": email}
         )
         absolute_url = f"{settings.DOMAIN}/auth/change-email/{token}/"
         template_path = os.path.join(templates_directory, "change_email.html")
@@ -216,4 +224,32 @@ class AccountView(View):
 
         current_user_account.save()
 
+        if email != request.user.email:
+            messages.add_message(
+                request,
+                messages.WARNING,
+                "Verification email has been sent to you, to confirm your new email",
+            )
         return render(request, "accounts/account_detail.html", context=context)
+
+
+class ConfirmChangeEmailView(View):
+    def get(self, request, token):
+        try:
+            decoded_token = User.decode_token(token)
+            user_obj = get_object_or_404(User, id=decoded_token["id"])
+            user_obj.email = decoded_token["new_email"]
+
+            user_obj.save()
+            messages.add_message(
+                    request,
+                    messages.SUCCESS,
+                    "New email has been successfully verified",
+                    )
+        except:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                "Could not verify new email, please try again",
+            )
+        return redirect("accounts:account-detail")

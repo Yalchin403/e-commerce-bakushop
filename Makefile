@@ -6,3 +6,9 @@ upgrade_packages:
 
 format:
 	black .
+
+run:
+	docker compose -f docker-compose-local.yml up --build
+
+deploy_prod:
+	docker-compose -f docker-compose-prod.yml up --build -d

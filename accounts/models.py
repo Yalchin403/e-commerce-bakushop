@@ -123,6 +123,9 @@ class Account(AbstractBaseUser):
 
         return token
 
+    @staticmethod
+    def decode_token(token):
+        return jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
 
 @receiver(post_save, sender=Account)
 def print_only_after_deal_created(sender, instance, created, **kwargs):
@@ -140,7 +143,12 @@ def print_only_after_deal_created(sender, instance, created, **kwargs):
 
 
 class AccountDetail(models.Model):
-    user = models.OneToOneField(Account, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(
+        Account,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name="account_detail",
+    )
     first_name = models.CharField(max_length=30, null=True)
     last_name = models.CharField(max_length=30, null=True)
     phone_number = models.CharField(max_length=20, null=True)
