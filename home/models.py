@@ -6,6 +6,8 @@ from django.contrib.auth import get_user_model
 from order_automation.utils import notify_critic_stock
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
+from decimal import Decimal
+from django.core.validators import MinValueValidator
 
 
 User = get_user_model()
@@ -92,7 +94,15 @@ class Product(BaseModel):
     name = models.CharField(max_length=250, unique=True)
     slug = models.SlugField(null=True, unique=True, blank=True)
     description = models.TextField(blank=True)
-    price = models.FloatField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    discount_percentage = models.DecimalField(
+        null=True,
+        blank=True,
+        max_digits=5,
+        decimal_places=2,
+        default=Decimal(0.00),
+        validators=[MinValueValidator(Decimal("0.00"))],
+    )
     images = models.ManyToManyField("ProductImage", related_name="products")
     stock = models.IntegerField()
     critic_stock = models.IntegerField()
@@ -166,12 +176,36 @@ class Cart(BaseModel):
 
 
 class CartItem(BaseModel):
+    status_choices = [
+        ("PENDING", "Pending"),
+        ("PROCESSING", "Processing"),
+        ("SHIPPED", "Shipped"),
+        ("DELIVERED", "Delivered"),
+        ("CANCELLED", "Cancelled"),
+    ]
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
-
+    purchased = models.BooleanField(default=False)
+    status = models.CharField(choices=status_choices, max_length=20, default="PENDING")
+    date_purchased = models.DateTimeField(null=True, blank=True)
+    subtotal = models.DecimalField(
+        max_digits=10, decimal_places=2, default=Decimal(0.00)
+    )
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal(0.00))
+    deleted = models.BooleanField(default=False)
+    
     def __str__(self) -> str:
         return f"{self.cart} - {self.quantity} - {self.product}"
+
+    def save(self, *args, **kwargs) -> None:
+        self.subtotal = self.product.price * self.quantity
+        self.total = (
+            self.subtotal
+            - self.product.price * (self.product.discount / 100) * self.quantity
+        )
+        super(CartItem, self).save(*args, **kwargs)
+
 
 class WishList(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
