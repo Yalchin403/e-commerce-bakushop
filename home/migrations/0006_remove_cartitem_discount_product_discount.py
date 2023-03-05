@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("home", "0005_cartitem_date_purchased_cartitem_discount_and_more"),
     ]

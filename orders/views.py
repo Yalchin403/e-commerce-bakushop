@@ -30,7 +30,6 @@ class OrderView(View):
                 and order_url is not None
                 and notes is not None
             ):
-
                 order_obj = Order.objects.create(
                     name=name,
                     surname=surname,

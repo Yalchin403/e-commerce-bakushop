@@ -8,7 +8,6 @@ LOGGER = logging.getLogger(__name__)
 
 @shared_task
 def send_email(subject, reciever_email, content):
-
     try:
         msg = EmailMessage(
             subject,

@@ -16,7 +16,6 @@ from order_automation.utils import get_template
 
 class MyAccountManager(BaseUserManager):
     def create_user(self, username, email, password):
-
         if not email:
             raise ValueError("User must have an email address")
 
@@ -37,7 +36,6 @@ class MyAccountManager(BaseUserManager):
         return user
 
     def create_superuser(self, username, email, password):
-
         if not email:
             raise ValueError("User must have an email address")
 

@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("home", "0006_remove_cartitem_discount_product_discount"),
     ]

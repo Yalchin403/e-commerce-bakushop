@@ -5,11 +5,13 @@ from .models import (
     Product,
     Category,
     WishList,
+    Cart,
 )
 from .utils import get_request_params, send_message_to_admin
 from django.contrib import messages
 from django.db.models import Q, ExpressionWrapper, BooleanField, Avg
 from django.conf import settings
+from django.core.paginator import Paginator
 
 
 class HomeView(View):
@@ -38,7 +40,6 @@ class HomeView(View):
                 product_qs = product_qs.filter(price__lte=int(lte), price__gte=int(gte))
 
             except:
-
                 if filter_by_price == "gte200":
                     product_qs = product_qs.filter(price__gte=int(200))
 
@@ -157,7 +158,6 @@ class ContactView(View):
             and email is not None
             and message is not None
         ):
-
             send_message_to_admin(name, email, subject, message)
 
             messages.success(request, "Your message has been sent successfully!")
@@ -181,3 +181,19 @@ class LogView(View):
         logger.error("ERROR log")
 
         return HttpResponse("Log is done")
+
+
+class CartView(View):
+    def get(self, request):
+        if self.request.user.is_authenticated:
+            cart = get_object_or_404(Cart, user=request.user, is_active=True)
+            cart_items = cart.cart_items.all()
+            paginator = Paginator(cart_items, 10)
+            page_number = request.GET.get("page")
+            page_obj = paginator.get_page(page_number)
+            context = {"cart": cart, "cart_items": page_obj}
+
+            return render(request, "home/shopping-cart.html", context=context)
+
+    def post(self, request):
+        ...

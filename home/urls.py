@@ -6,6 +6,7 @@ from home.views import (
     SearchView,
     HomeDetailView,
     LogView,
+    CartView,
 )
 
 app_name = "home"
@@ -13,6 +14,7 @@ urlpatterns = [
     path("", HomeView.as_view(), name="home"),
     path("<str:category>/<str:name>/", HomeDetailView.as_view(), name="detail"),
     path("about/", AboutView.as_view(), name="about"),
+    path("shopping-cart/", CartView.as_view(), name="cart"),
     path("search/", SearchView.as_view(), name="search"),
     path("contact/", ContactView.as_view(), name="contact"),
     path("log/", LogView.as_view(), name="log"),

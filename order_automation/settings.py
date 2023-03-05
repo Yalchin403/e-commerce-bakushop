@@ -82,7 +82,6 @@ TEMPLATES = [
 WSGI_APPLICATION = "order_automation.wsgi.application"
 
 if not DEBUG:
-
     DATABASES = {
         "default": {
             "ENGINE": DB_ENGINE,

@@ -87,9 +87,7 @@ class AddRemoveWishlistIUnauthenticated(APIView):
         is_product_exists = Product.objects.filter(stock__gt=1, id=product_id).exists()
 
         if is_product_exists:
-
             if request.session.get("fav_products"):
-
                 if product_id in request.session["fav_products"]:
                     # ** remove product from local wishlist storage
                     current_fav_products = request.session["fav_products"]
@@ -159,7 +157,6 @@ class ProductList(generics.ListAPIView):
                 product_qs = product_qs.filter(price__lte=int(lte), price__gte=int(gte))
 
             except:
-
                 if filter_by_price == "gte200":
                     product_qs = product_qs.filter(price__gte=int(200))
 

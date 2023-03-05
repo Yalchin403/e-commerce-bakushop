@@ -171,6 +171,16 @@ class Cart(BaseModel):
             cart_item.quantity = quantity
         cart_item.save()
 
+    @property
+    def get_subtotal(self):
+        cart_items = CartItem.objects.filter(cart=self, cart__is_active=True)
+        return sum([cart_item.subtotal for cart_item in cart_items])
+
+    @property
+    def get_total(self):
+        cart_items = CartItem.objects.filter(cart=self, cart__is_active=True)
+        return sum([cart_item.total for cart_item in cart_items])
+
     def __str__(self) -> str:
         return str(self.user)
 
@@ -183,7 +193,7 @@ class CartItem(BaseModel):
         ("DELIVERED", "Delivered"),
         ("CANCELLED", "Cancelled"),
     ]
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="cart_items")
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     purchased = models.BooleanField(default=False)
@@ -194,7 +204,7 @@ class CartItem(BaseModel):
     )
     total = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal(0.00))
     deleted = models.BooleanField(default=False)
-    
+
     def __str__(self) -> str:
         return f"{self.cart} - {self.quantity} - {self.product}"
 
@@ -202,7 +212,9 @@ class CartItem(BaseModel):
         self.subtotal = self.product.price * self.quantity
         self.total = (
             self.subtotal
-            - self.product.price * (self.product.discount / 100) * self.quantity
+            - self.product.price
+            * (self.product.discount_percentage / 100)
+            * self.quantity
         )
         super(CartItem, self).save(*args, **kwargs)
 

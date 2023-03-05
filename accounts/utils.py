@@ -9,7 +9,6 @@ LOGGER = logging.getLogger(__name__)
 
 
 def send_email(subject, reciever_email, content):
-
     try:
         msg = EmailMessage(
             subject,

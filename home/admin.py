@@ -21,6 +21,7 @@ class BaseAdmin(admin.ModelAdmin):
         "updated_at",
     ]
 
+
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = ["name", "surname", "image", "profession"]
 
@@ -33,8 +34,8 @@ class CartItemAdmin(admin.ModelAdmin):
         "total",
         "date_purchased",
         "quantity",
-        "cart",
-        "product",
+        # "cart",
+        # "product",
         "purchased",
     ]
     list_display = [
@@ -51,6 +52,7 @@ class CartItemAdmin(admin.ModelAdmin):
     search_fields = ("cart__user__email", "product__name")
     list_filter = ["purchased", "deleted"]
 
+
 class CartAdmin(BaseAdmin):
     readonly_fields = [
         "created_at",
@@ -65,7 +67,9 @@ class CartAdmin(BaseAdmin):
     ]
 
     search_fields = ("user__email",)
-    list_filter = ["is_active",]
+    list_filter = [
+        "is_active",
+    ]
 
 
 admin.site.register(Employee, EmployeeAdmin)

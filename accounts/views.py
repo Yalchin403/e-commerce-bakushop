@@ -57,7 +57,6 @@ class SignUpView(View):
         return redirect("home:home")
 
     def post(self, request):
-
         # TODO:
         # write some js for validation and checking if user accepted terms and conditions
         username = request.POST.get("username")
@@ -71,7 +70,6 @@ class SignUpView(View):
             user_qs_by_email = User.objects.filter(email=email)
 
             if not user_qs_by_email and not user_qs_by_username:
-
                 if password1 == password2:
                     user_obj = User.objects.create(username=username, email=email)
                     user_obj.set_password(password2)
@@ -90,7 +88,6 @@ class SignUpView(View):
                     )
 
             else:
-
                 if user_qs_by_email:
                     messages.error(request, "Email artıq istifadə olunub!")
 
@@ -107,7 +104,6 @@ class VerifyAccountView(View):
     def get(self, request, id, otp):
         account_obj = get_object_or_404(User, id=id)
         if not account_obj.is_active:
-
             activation_key = account_obj.activation_key
             totp = pyotp.TOTP(activation_key, interval=600)
 
@@ -212,7 +208,7 @@ class AccountView(View):
             {"id": self.request.user.id, "new_email": email}
         )
         absolute_url = f"{settings.DOMAIN}/auth/change-email/{token}/"
-        template_path = get_template(__name__.split('.')[0], "change_email.html")
+        template_path = get_template(__name__.split(".")[0], "change_email.html")
         email_content = get_html_content(template_path, absolute_url=absolute_url)
         send_email.delay("Yeni emailinizi tesdiqləyin", email, email_content)
 
@@ -243,10 +239,10 @@ class ConfirmChangeEmailView(View):
 
             user_obj.save()
             messages.add_message(
-                    request,
-                    messages.SUCCESS,
-                    "New email has been successfully verified",
-                    )
+                request,
+                messages.SUCCESS,
+                "New email has been successfully verified",
+            )
         except:
             messages.add_message(
                 request,

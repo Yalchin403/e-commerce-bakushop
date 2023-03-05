@@ -15,7 +15,11 @@ app_name = "accounts"
 urlpatterns = [
     path("signup/", SignUpView.as_view(), name="signup-view"),
     path("signin/", SignInView.as_view(), name="signin-view"),
-    path("change-email/<str:token>/", ConfirmChangeEmailView.as_view(), name="confirm-change-email"),
+    path(
+        "change-email/<str:token>/",
+        ConfirmChangeEmailView.as_view(),
+        name="confirm-change-email",
+    ),
     path(
         "account/",
         login_required(AccountView.as_view(), login_url="/auth/signin/"),
