@@ -8,6 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from decimal import Decimal
 from django.core.validators import MinValueValidator
+from home.choices import CartItemStatuses
 
 
 User = get_user_model()
@@ -187,11 +188,11 @@ class Cart(BaseModel):
 
 class CartItem(BaseModel):
     status_choices = [
-        ("PENDING", "Pending"),
-        ("PROCESSING", "Processing"),
-        ("SHIPPED", "Shipped"),
-        ("DELIVERED", "Delivered"),
-        ("CANCELLED", "Cancelled"),
+        (CartItemStatuses.PENDING.value, CartItemStatuses.PENDING.value),
+        (CartItemStatuses.PROCESSING.value, CartItemStatuses.PROCESSING.value),
+        (CartItemStatuses.SHIPPED.value, CartItemStatuses.SHIPPED.value),
+        (CartItemStatuses.DELIVERED.value, CartItemStatuses.DELIVERED.value),
+        (CartItemStatuses.CANCELLED.value, CartItemStatuses.CANCELLED.value),
     ]
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="cart_items")
     product = models.ForeignKey(Product, on_delete=models.CASCADE)

@@ -1,4 +1,4 @@
-from home.models import Product
+from home.models import Product, CartItem
 from rest_framework import serializers
 
 
@@ -24,3 +24,9 @@ class ProductSerializer(serializers.ModelSerializer):
             "is_in_my_wishlist",
         ]
         depth = 2
+
+
+class CartItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CartItem
+        exclude = ["cart", "deleted"]

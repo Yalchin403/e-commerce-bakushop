@@ -7,9 +7,9 @@
 # TODO: add separate page for viewing favorite icons by clicking favortie icon on the navbar
 # TODO: make sure when you click on add to cart item, it updates the number on top of add to cart icon in the nav bar
 # TODO: cart items page, when you increase or decrease number of products, make sure it updates quantity, considers stocker number, also updates totals aned subtotals in both db and in the frontend
-# TODO:
-# TODO:
-# TODO:
+# TODO: when login move session cart items to database cart items based on login signal
+# TODO: when user goes to cart items page if he/she is unauthenticated make sure you show right items from the session
+# TODO: do not show checkout button when the cart is empty
 # TODO:
 # TODO:
 # TODO:

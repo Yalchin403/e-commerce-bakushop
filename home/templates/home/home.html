@@ -486,7 +486,7 @@
 							</div>
 							
 							<div class="block2-txt-child2 flex-r p-t-3">
-								<a href="">
+								<a href="javascript:;">
 									<i class="fa fa-solid fa-cart-plus"></i>
 								</a>
 								<a href="javascript:;" id="{{product.id}}" onclick="addRemoveWishlist('{{ product.id }}', '{{ session_id }}', '{{ csrf_token }}', '{{request.user.is_authenticated}}')" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2 {% if product.is_in_my_wishlist %} js-addedwish-b2 {% endif %}">

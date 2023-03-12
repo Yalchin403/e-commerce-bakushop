@@ -5,4 +5,4 @@ from rest_framework import status
 class AutherizationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = "This endpoint is meant for only unauthenticated users."
-    default_code = "invalid"
+    default_code = "unauthenticated_requests_are_not_allowed"

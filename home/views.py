@@ -195,5 +195,13 @@ class CartView(View):
 
             return render(request, "home/shopping-cart.html", context=context)
 
+        else:
+            if request.session.get("cartitems"):
+                cartitems_products = request.session.get("cartitems")
+                # TODO: think how you will handle it
+
+            return render(request, "home/shopping-cart.html", context={})
+
+
     def post(self, request):
         ...

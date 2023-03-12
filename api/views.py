@@ -2,20 +2,16 @@ from rest_framework.views import APIView
 from rest_framework import authentication, permissions
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from home.models import (
-    Product,
-    WishList,
-)
+from home.models import Product, WishList, CartItem, Cart
 from rest_framework.response import Response
 from .custom_api_exceptions import AutherizationError
-from .serializers import ProductSerializer
-from rest_framework import generics
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
+from .serializers import ProductSerializer, CartItemSerializer
+from rest_framework import generics, status, filters
 from home.utils import get_request_params
 from django.db.models import Q, ExpressionWrapper, BooleanField, Avg
 from rest_framework.pagination import PageNumberPagination
 import logging
+from home.choices import CartItemStatuses
 
 
 User = get_user_model()
@@ -48,7 +44,8 @@ class AddRemoveWishlist(APIView):
                 {
                     "action": "removed",
                     "productCounts": wish_list_items_count,
-                }
+                },
+                status=status.HTTP_200_OK,
             )
 
         has_wish_list = WishList.objects.filter(user=current_user).exists()
@@ -71,7 +68,8 @@ class AddRemoveWishlist(APIView):
             {
                 "action": "added",
                 "productCounts": wish_list_items_count,
-            }
+            },
+            status=status.HTTP_201_CREATED,
         )
 
 
@@ -98,7 +96,8 @@ class AddRemoveWishlistIUnauthenticated(APIView):
                         {
                             "action": "removed",
                             "productCounts": len(current_fav_products),
-                        }
+                        },
+                        status=status.HTTP_200_OK,
                     )
 
                 else:
@@ -111,7 +110,8 @@ class AddRemoveWishlistIUnauthenticated(APIView):
                         {
                             "action": "added",
                             "productCounts": len(request.session["fav_products"]),
-                        }
+                        },
+                        status=status.HTTP_201_CREATED,
                     )
 
             else:
@@ -120,7 +120,8 @@ class AddRemoveWishlistIUnauthenticated(APIView):
                     {
                         "action": "added",
                         "productCounts": len(request.session["fav_products"]),
-                    }
+                    },
+                    status=status.HTTP_201_CREATED,
                 )
 
 
@@ -197,3 +198,119 @@ class ProductDetail(generics.RetrieveAPIView):
     queryset = Product.objects.filter(stock__gt=0, is_deleted=False)
     serializer_class = ProductSerializer
     lookup_field = "id"
+
+
+class DeleteCartItem(generics.DestroyAPIView):
+    serializer_class = CartItemSerializer
+    lookup_field = "id"
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return CartItem.objects.filter(
+            cart__user=self.request.user,
+            deleted=False,
+            status=CartItemStatuses.PENDING.value,
+            cart__is_active=True,
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        object = self.get_object()
+        object.deleted = True
+        object.save()
+
+        serializer = CartItemSerializer(object)
+        return Response(serializer.data)
+
+
+class DeleteCartItemUnauthenticated(APIView):
+    def delete(self, request, product_id):
+        if request.session.get("cartitems"):
+            if product_id in request.session["cartitems"]:
+                # ** remove product from local wishlist storage
+                current_cartitems_products = request.session["cartitems"]
+                current_cartitems_products.remove(product_id)
+                request.session["cartitems"] = current_cartitems_products
+
+            return Response(
+                {
+                    "action": "removed",
+                    "cartItemCounts": len(current_cartitems_products),
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        return Response(
+            {"message": "cart is empty"}, status=status.HTTP_409_CONFLICT
+        )
+
+
+class AddCartItem(APIView):
+    """API endpoint to add/remove cart items for authenticated users"""
+
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, product_id: int) -> str:
+        current_user = User.objects.get(id=request.user.id)
+        product_obj = get_object_or_404(Product, pk=product_id)
+        # ** add or remove the product to/from WishList
+        is_product_in_cart = CartItem.objects.filter(
+            product=product_obj, cart__user=current_user, cart__is_active=True
+        ).exists()
+
+        if not is_product_in_cart:
+            cart = Cart.objects.get_or_create(is_active=True, user=current_user)[0]
+            print(cart)
+            CartItem.objects.create(
+                cart=cart,
+                product=product_obj,
+            )
+        cartitem = CartItem.objects.get(product=product_obj, cart__user=current_user)
+        cartitem.deleted = False
+        cartitem.save()
+
+        cart_items_count = CartItem.objects.filter(cart__user=current_user).count()
+
+        return Response(
+            {
+                "action": "added",
+                "productCounts": cart_items_count,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class AddCartItemUnauthenticated(APIView):
+    """API endpoint to add/remove cart items for unauthenticated users"""
+
+    def post(self, request, product_id):
+        if request.user.is_authenticated:
+            raise AutherizationError()
+
+        is_product_exists = Product.objects.filter(stock__gt=1, id=product_id).exists()
+
+        if is_product_exists:
+            if request.session.get("cartitems"):
+                if product_id not in request.session["cartitems"]:
+                    request.session["cartitems"] += [
+                        product_id,
+                    ]
+
+                return Response(
+                    {
+                        "action": "added",
+                        "cartItemCounts": len(request.session["cartitems"]),
+                    },
+                    status=status.HTTP_201_CREATED,
+                )
+
+            else:
+                request.session["cartitems"] = [product_id]
+                return Response(
+                    {
+                        "action": "added",
+                        "cartItemCounts": len(request.session["cartitems"]),
+                    },
+                    status=status.HTTP_201_CREATED,
+                )

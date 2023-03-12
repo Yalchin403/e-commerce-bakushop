@@ -39,15 +39,17 @@ class CartItemAdmin(admin.ModelAdmin):
         "purchased",
     ]
     list_display = [
-        "created_at",
-        "updated_at",
+        "product",
+        "cart",
+        "quantity",
+        "status",
+        "deleted",
         "subtotal",
         "total",
-        "date_purchased",
-        "quantity",
-        "cart",
-        "product",
         "purchased",
+        "date_purchased",
+        "created_at",
+        "updated_at",
     ]
     search_fields = ("cart__user__email", "product__name")
     list_filter = ["purchased", "deleted"]
